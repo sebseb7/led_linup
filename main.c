@@ -99,7 +99,7 @@ void display_highscore()
 	else if(state_a == WAIT_A)
 	{
 		state_b++;
-		if(state_b>=500)
+		if(state_b>=150)
 		{
 			state_a++;
 			state_b=0;
