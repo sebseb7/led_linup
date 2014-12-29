@@ -5,7 +5,7 @@ SRC = $(wildcard *.c)
 SRC+= sdl_draw/SDL_draw.c
 SRC+= $(wildcard libs/*.c)
 
-FLAGS= --std=gnu99 -Wall -funsigned-char -Wundef -Wsign-compare -pedantic  -Wstrict-prototypes -lftdi1
+FLAGS= --std=gnu99 -Wall -Wextra -Wall -funsigned-char -Wundef -Wsign-compare -pedantic  -Wstrict-prototypes -lftdi1
 
 
 ifeq ($(UNAME), Darwin)

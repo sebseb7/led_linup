@@ -58,6 +58,37 @@ static uint16_t state_d = 0;
 static uint16_t state_e = 0;
 
 
+static char *location_name = "SEKTOR EVOLUTION";
+static char *event_name = "   SYLVESTER    ";
+static char *floor_list[] = {"Teknofloor:","Spyfloor:","Igloo:"};
+
+
+#define FLOOR_A_LENGTH 2
+#define FLOOR_B_LENGTH 1
+#define FLOOR_C_LENGTH 1
+
+static char *floor_a[FLOOR_A_LENGTH*9] = {
+					"00:oo - 01:oo "," slot a",     "",
+					"01:oo - 02:oo "," slot b",     "",
+					"02:oo - 03:oo "," slot c",     "",
+					"03:oo - 09:3o "," Hesed",      "             (ATM)",
+					"09:3o - 09:31 "," Tim vs. S10","",
+					"09:31 - 19:45 "," P3p3d",""
+				};
+static char *floor_b[FLOOR_B_LENGTH*9] = {
+					"00:oo - 01:oo "," slot 1",     "",
+					"01:oo - 02:oo "," slot 2",     "",
+					"02:oo - 03:oo "," slot 3",     "",
+				};
+static char *floor_c[FLOOR_C_LENGTH*9] = {
+					"00:oo - 01:oo "," slot x",     "",
+					"01:oo - 02:oo "," slot y",     "",
+					"02:oo - 03:oo "," slot z",     "",
+				};
+
+
+
+
 void display_highscore()
 {
 	tick++;
@@ -65,8 +96,8 @@ void display_highscore()
 	int color = sini(tick<<7);
 	int color2 = sini(tick<<9);
 
-	print_5x3_at (4,0,"SEKTOR EVOLUTION",color>>12);
-	print_5x3_at (4,0,"   SYLVESTER    ",15-(color>>12));
+	print_5x3_at (4,0,location_name,color>>12);
+	print_5x3_at (4,0,event_name,15-(color>>12));
 
 
 	if(state_a == FADE_IN)
@@ -116,7 +147,7 @@ void display_highscore()
 				state_e++;
 				if(state_d == FUTUREFLOOR)
 				{
-					if(state_e==2)
+					if(state_e==FLOOR_A_LENGTH)
 					{
 						state_e=0;
 						state_a=FADE_OUT;
@@ -124,7 +155,7 @@ void display_highscore()
 				}
 				if(state_d == SPYFLOOR)
 				{
-					if(state_e==1)
+					if(state_e==FLOOR_B_LENGTH)
 					{
 						state_e=0;
 						state_a=FADE_OUT;
@@ -132,7 +163,7 @@ void display_highscore()
 				}
 				if(state_d == IGLOO)
 				{
-					if(state_e==1)
+					if(state_e==FLOOR_C_LENGTH)
 					{
 						state_e=0;
 						state_a=FADE_OUT;
@@ -170,8 +201,6 @@ void display_highscore()
 			state_b=0;
 		}
 	}
-	char* floor="";
-
 	char* time1 ="";
 	char* time2 ="";
 	char* time3 ="";
@@ -183,55 +212,43 @@ void display_highscore()
 	char* dj2_sm = "";
 	char* dj3_sm = "";
 
+	char* floor=floor_list[state_d];
 
 	if(state_d == FUTUREFLOOR)
 	{
-		floor="Futurefloor:";
-		if(state_e == 0)
-		{
-			dj1=" slot a";
-			dj2=" slot b";
-			dj3=" slot c";
-			time1 ="00:oo - 01:oo ";
-			time2 ="01:oo - 02:oo ";
-			time3 ="02:oo - 03:oo ";
-		}
-		if(state_e == 1)
-		{
-			dj1=" Hesed";
-			dj1_sm="             (ATM)";
-			dj2=" Tim vs. S10";
-			dj3=" P3p3d";
-			time1 ="03:oo - 09:3o ";
-			time2 ="09:3o - 09:31 ";
-			time3 ="09:31 - 19:45 ";
-		}
+		dj1=floor_a[state_e*9+1];
+		dj2=floor_a[state_e*9+1+3];
+		dj3=floor_a[state_e*9+1+6];
+		dj1_sm=floor_a[state_e*9+2];
+		dj2_sm=floor_a[state_e*9+2+3];
+		dj3_sm=floor_a[state_e*9+2+6];
+		time1=floor_a[state_e*9];
+		time2=floor_a[state_e*9+3];
+		time3=floor_a[state_e*9+6];
 	}
 	if(state_d == SPYFLOOR)
 	{
-		floor="Spyfloor:";
-		if(state_e == 0)
-		{
-			dj1=" slot 1";
-			dj2=" slot 2";
-			dj3=" slot 3";
-			time1 ="00:oo - 02:oo ";
-			time2 ="02:oo - 04:oo ";
-			time3 ="04:oo - 06:oo ";
-		}
+		dj1=floor_b[state_e*9+1];
+		dj2=floor_b[state_e*9+1+3];
+		dj3=floor_b[state_e*9+1+6];
+		dj1_sm=floor_b[state_e*9+2];
+		dj2_sm=floor_b[state_e*9+2+3];
+		dj3_sm=floor_b[state_e*9+2+6];
+		time1=floor_b[state_e*9];
+		time2=floor_b[state_e*9+3];
+		time3=floor_b[state_e*9+6];
 	}
 	if(state_d == IGLOO)
 	{
-		floor="Igloo:";
-		if(state_e == 0)
-		{
-			dj1=" slot x";
-			dj2=" slot y";
-			dj3=" slot z";
-			time1 ="00:oo - 02:oo ";
-			time2 ="02:oo - 04:oo ";
-			time3 ="04:oo - 06:oo ";
-		}
+		dj1=floor_c[state_e*9+1];
+		dj2=floor_c[state_e*9+1+3];
+		dj3=floor_c[state_e*9+1+6];
+		dj1_sm=floor_c[state_e*9+2];
+		dj2_sm=floor_c[state_e*9+2+3];
+		dj3_sm=floor_c[state_e*9+2+6];
+		time1=floor_c[state_e*9];
+		time2=floor_c[state_e*9+3];
+		time3=floor_c[state_e*9+6];
 	}
 
 
@@ -352,6 +369,8 @@ void display_highscore()
 void setLedXY(uint16_t x, uint16_t y, uint8_t red,uint8_t green, uint8_t blue) {
 	if (x >= LCD_WIDTH) return;
 	if (y >= LCD_HEIGHT) return;
+	red=blue;
+	blue=red;
 	display[y][x] = green;
 	rerender = 1;
 }
@@ -359,6 +378,8 @@ void setLedXY(uint16_t x, uint16_t y, uint8_t red,uint8_t green, uint8_t blue) {
 void orLedXY(uint16_t x, uint16_t y, uint8_t red,uint8_t green, uint8_t blue) {
 	if (x >= LCD_WIDTH) return;
 	if (y >= LCD_HEIGHT) return;
+	red=blue;
+	blue=green;
 	display[y][x] |= green;
 	rerender = 1;
 }
@@ -372,7 +393,9 @@ void invLedXY(uint16_t x, uint16_t y) {
 void getLedXY(uint16_t x, uint16_t y, uint8_t* red,uint8_t* green, uint8_t* blue) {
 	if (x >= LCD_WIDTH) return;
 	if (y >= LCD_HEIGHT) return;
+	*red = display[y][x];
 	*green = display[y][x];
+	*blue = display[y][x];
 }
 
 
@@ -428,7 +451,7 @@ void clear_display()
 }
 
 
-int main(int argc, char *argv[]) {
+int main(int argc __attribute__((unused)), char *argv[] __attribute__((unused))) {
 #ifdef sdl_support
 	srand(SDL_GetTicks());
 #endif
