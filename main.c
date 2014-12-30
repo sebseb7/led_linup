@@ -24,7 +24,7 @@ static struct ftdi_context *ftdi;
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 
-enum { ZOOM = 17 };
+enum { ZOOM = 9 };
 
 
 static unsigned char	display[DISPLAY_HEIGHT][DISPLAY_WIDTH];
