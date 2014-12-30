@@ -3,13 +3,10 @@
 #include <unistd.h>
 #include <assert.h>
 #include <sys/time.h>
-//#define sdl_support
 #ifdef sdl_support
 #include <SDL/SDL.h>
 #include "sdl_draw/SDL_draw.h"
 #endif
-
-#define serial
 
 #ifdef serial
 #include "libftdi1/ftdi.h"
@@ -27,7 +24,7 @@ static struct ftdi_context *ftdi;
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 
-enum { ZOOM = 7 };
+enum { ZOOM = 17 };
 
 
 static unsigned char	display[DISPLAY_HEIGHT][DISPLAY_WIDTH];
@@ -60,23 +57,23 @@ static uint16_t state_e = 0;
 
 static char *location_name = "    SEKTOR      ";
 static char *event_name =    "   SYLVESTER    ";
-static char *floor_list[] = {"Teknofloor:","Spyfloor:","Igloo:"};
+static char *floor_list[] = {"TEKNOFLOOR","SPYFLOOR","IGLOO"};
 
 
 #define FLOOR_A_LENGTH 3
 #define FLOOR_B_LENGTH 2
-#define FLOOR_C_LENGTH 1
+#define FLOOR_C_LENGTH 2
 
 static char *floor_a[FLOOR_A_LENGTH*9] = {
 					"23:55 - 01:oo "," Ernstesy",     "",
 					"01:oo - 02:3o "," 90 Grad",     "",
 					"02:3o - 04:oo "," P3p3d",     "",
 					"04:oo - 05:3o "," Steffen",      "",
-					"05:3o - 07:00 "," Hesed","             (ATM)",
-					"07:00 - 08:30 ",""," Andre Triple X",
-					"08:3o - 09:30 "," Marvin","",
-					"09:3o - 11:00 "," Matte Live","",
-					"11:00 - 13:30 "," Maik","",
+					"05:3o - 07:oo "," Hesed","             (ATM)",
+					"07:oo - 08:3o ",""," Andre Triple X",
+					"08:3o - 09:3o "," Marvin","",
+					"09:3o - 11:oo "," Matte Live","",
+					"11:oo - 13:3o "," Maik","",
 
 				};
 static char *floor_b[FLOOR_B_LENGTH*9] = {
@@ -88,9 +85,12 @@ static char *floor_b[FLOOR_B_LENGTH*9] = {
 					"10:oo - 12:oo "," LSDj 25",     "",
 				};
 static char *floor_c[FLOOR_C_LENGTH*9] = {
-					"00:oo - 01:oo "," slot x",     "",
-					"01:oo - 02:oo "," slot y",     "",
-					"02:oo - 03:oo "," slot z",     "",
+					"23:55 - 02:oo "," ?",     "",
+					"02:oo - 04:oo "," ?",     "",
+					"04:oo - 06:oo "," ?",     "",
+					"06:oo - 07:oo "," ?",     "",
+					"08:oo - 10:oo "," ?",     "",
+					"10:oo - 12:oo "," ?",     "",
 				};
 
 
@@ -100,7 +100,7 @@ void display_highscore()
 {
 	tick++;
 
-	int color = sini(tick<<7);
+	int color = sini(tick<<9);
 	int color2 = sini(tick<<10);
 
 	print_5x3_at (4,0,location_name,color>>12);
@@ -109,7 +109,7 @@ void display_highscore()
 
 	if(state_a == FADE_IN)
 	{
-		state_b++;
+		state_b+=4;
 		if(state_b>=100)
 		{
 			state_a++;
@@ -118,7 +118,7 @@ void display_highscore()
 	}
 	else if(state_a == SCROLL_CLOCK_IN)
 	{
-		state_b++;
+		state_b+=4;
 		if(state_b>=72)
 		{
 			state_a++;
@@ -127,7 +127,7 @@ void display_highscore()
 	}
 	else if(state_a == SCROLL_NAMES_IN)
 	{
-		state_b++;
+		state_b+=4;
 		if(state_b>=72)
 		{
 			state_a++;
@@ -136,7 +136,7 @@ void display_highscore()
 	}
 	else if(state_a == WAIT_A)
 	{
-		state_b++;
+		state_b+=2;
 		if(state_b>=150)
 		{
 			state_a++;
@@ -145,7 +145,7 @@ void display_highscore()
 	}
 	else if(state_a == SCROLL_OUT)
 	{
-		state_b++;
+		state_b+=4;
 		if(state_b>=72)
 		{
 			state_a=SCROLL_CLOCK_IN;
@@ -263,7 +263,7 @@ void display_highscore()
 
 
 
-	print_5x3_at (0,7,floor,10);
+	print_5x3_at (0,9,floor,10);
 	draw_filledRect(0,13+2,72,7,0,11,0);
 	draw_filledRect(0,30+2,72,7,0,11,0);
 	draw_filledRect(0,47+2,72,7,0,11,0);
@@ -271,15 +271,15 @@ void display_highscore()
 
 	if(state_a==SCROLL_CLOCK_IN)
 	{
-		print_5x3_at (1+(72-state_b),14+2,time1,16+(color2>>14));
-		print_5x3_at (1+(72-state_b),31+2,time2,16+(color2>>14));
-		print_5x3_at (1+(72-state_b),48+2,time3,16+(color2>>14));
+		print_5x3_at (1+(72-state_b),14+2,time1,16+(color2>>15));
+		print_5x3_at (1+(72-state_b),31+2,time2,16+(color2>>15));
+		print_5x3_at (1+(72-state_b),48+2,time3,16+(color2>>15));
 	}
 	if(state_a==SCROLL_NAMES_IN)
 	{
-		print_5x3_at (1,14+2,time1,16+(color2>>14));
-		print_5x3_at (1,31+2,time2,16+(color2>>14));
-		print_5x3_at (1,48+2,time3,16+(color2>>14));
+		print_5x3_at (1,14+2,time1,16+(color2>>15));
+		print_5x3_at (1,31+2,time2,16+(color2>>15));
+		print_5x3_at (1,48+2,time3,16+(color2>>15));
 		draw_text_8x6 (0+(72-state_b),17+2,dj1,0,15,0);
 		draw_text_8x6 (0+(72-state_b),34+2,dj2,0,15,0);
 		draw_text_8x6 (0+(72-state_b),51+2,dj3,0,15,0);
@@ -289,9 +289,9 @@ void display_highscore()
 	}
 	if(state_a==WAIT_A)
 	{
-		print_5x3_at (1,14+2,time1,16+(color2>>14));
-		print_5x3_at (1,31+2,time2,16+(color2>>14));
-		print_5x3_at (1,48+2,time3,16+(color2>>14));
+		print_5x3_at (1,14+2,time1,16+(color2>>15));
+		print_5x3_at (1,31+2,time2,16+(color2>>15));
+		print_5x3_at (1,48+2,time3,16+(color2>>15));
 		draw_text_8x6 (0,17+2,dj1,0,15,0);
 		draw_text_8x6 (0,34+2,dj2,0,15,0);
 		draw_text_8x6 (0,51+2,dj3,0,15,0);
@@ -301,9 +301,9 @@ void display_highscore()
 	}
 	if(state_a==SCROLL_OUT)
 	{
-		print_5x3_at (1-state_b,14+2,time1,16+(color2>>14));
-		print_5x3_at (1-state_b,31+2,time2,16+(color2>>14));
-		print_5x3_at (1-state_b,48+2,time3,16+(color2>>14));
+		print_5x3_at (1-state_b,14+2,time1,16+(color2>>15));
+		print_5x3_at (1-state_b,31+2,time2,16+(color2>>15));
+		print_5x3_at (1-state_b,48+2,time3,16+(color2>>15));
 		draw_text_8x6 (0-state_b,17+2,dj1,0,15,0);
 		draw_text_8x6 (0-state_b,34+2,dj2,0,15,0);
 		draw_text_8x6 (0-state_b,51+2,dj3,0,15,0);
@@ -327,12 +327,12 @@ void display_highscore()
 	uint8_t x, y;
 	
 
-	for(y = 0; y < LCD_HEIGHT; y++) 
+	for(y = 8; y < LCD_HEIGHT; y++) 
 	{
 		for(x = 0; x < LCD_WIDTH; x++) 
 		{
-			float dist = _sinf(pythagorasf(x0-x,y0-y));
-			float dist2 = _sinf(pythagorasf(x1-x,y1-y));
+			int dist = sini(pythagorasf(x0-x,y0-y)*1024)>>9;
+			int dist2 = sini(pythagorasf(x1-x,y1-y)*1024)>>9 ;
 				// sini((dist*dist2*dist2)+a*300)>>8, -> noise
 
 
@@ -360,12 +360,13 @@ void display_highscore()
 			{
 				factor=0;
 			}
-			uint8_t new_green = MIN(15,(green*((100-factor)/100.0f))+((((factor)/75.0f)+0.25f)*(sini((dist*dist2*64000)+a*200)>>12)));
+			uint8_t new_green = MIN(15,(green*((100-factor)/100.0f))+((((factor)/85.0f)+0.15f)*( sini((dist*dist2)+a*300)>>12)));
+			//new_green = sini((dist*dist2)+a*300)>>12;
 
 			setLedXY(x,y,0,new_green,0);
 		}
 	}
-	a+=1;
+	a+=2;
 	if(a==0x4000)
 	{
 		a=0;
@@ -645,9 +646,7 @@ int main(int argc __attribute__((unused)), char *argv[] __attribute__((unused)))
 #endif
 		}
 #ifdef sdl_support
-		SDL_Delay(10);
-#else
-		usleep(20);
+		SDL_Delay(42);
 #endif
 	}
 
