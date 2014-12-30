@@ -68,12 +68,16 @@ static char *floor_list[] = {"Teknofloor:","Spyfloor:","Igloo:"};
 #define FLOOR_C_LENGTH 1
 
 static char *floor_a[FLOOR_A_LENGTH*9] = {
-					"00:oo - 01:oo "," slot a",     "",
-					"01:oo - 02:oo "," slot b",     "",
-					"02:oo - 03:oo "," slot c",     "",
-					"03:oo - 09:3o "," Hesed",      "             (ATM)",
-					"09:3o - 09:31 "," Tim vs. S10","",
-					"09:31 - 19:45 "," P3p3d",""
+					"23:55 - 01:oo "," Ernstesy",     "",
+					"01:oo - 02:3o "," 90°",     "",
+					"02:3o - 04:oo "," P3p3d",     "",
+					"04:oo - 05:3o "," Steffen",      "",
+					"05:3o - 07:00 "," Hesed","             (ATM)",
+					"07:00 - 08:30 "," Andre Tripple X",""
+					//0800 - 930 Marvin
+					//930 - 11:00 Matte Live
+					//11:00 13:30 Maik
+
 				};
 static char *floor_b[FLOOR_B_LENGTH*9] = {
 					"00:oo - 01:oo "," slot 1",     "",
@@ -421,7 +425,18 @@ void write_frame(void)
 		{
 			uint8_t y2=y;
 			if(y2>=32){y2-=32;} else{ y2+=32;};
-			buf[pixel] = display[y2][x*2+1]*16+display[y2][x*2];
+		
+			int pix = display[y2][x*2+1]*16+display[y2][x*2];
+
+			if(pix == 0x42)
+				pix = 0x43;
+			if(pix == 0x65)
+				pix = 0x67;
+			if(pix == 0x66)
+				pix = 0x67;
+
+		
+			buf[pixel] = pix;
 			pixel++;
 		}
 	}
