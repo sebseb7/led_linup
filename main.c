@@ -58,31 +58,34 @@ static uint16_t state_d = 0;
 static uint16_t state_e = 0;
 
 
-static char *location_name = "SEKTOR EVOLUTION";
-static char *event_name = "   SYLVESTER    ";
+static char *location_name = "    SEKTOR      ";
+static char *event_name =    "   SYLVESTER    ";
 static char *floor_list[] = {"Teknofloor:","Spyfloor:","Igloo:"};
 
 
-#define FLOOR_A_LENGTH 2
-#define FLOOR_B_LENGTH 1
+#define FLOOR_A_LENGTH 3
+#define FLOOR_B_LENGTH 2
 #define FLOOR_C_LENGTH 1
 
 static char *floor_a[FLOOR_A_LENGTH*9] = {
 					"23:55 - 01:oo "," Ernstesy",     "",
-					"01:oo - 02:3o "," 90 Grad°",     "",
+					"01:oo - 02:3o "," 90 Grad",     "",
 					"02:3o - 04:oo "," P3p3d",     "",
 					"04:oo - 05:3o "," Steffen",      "",
 					"05:3o - 07:00 "," Hesed","             (ATM)",
-					"07:00 - 08:30 "," Andre XXX",""
-					//0800 - 930 Marvin
-					//930 - 11:00 Matte Live
-					//11:00 13:30 Maik
+					"07:00 - 08:30 ",""," Andre Triple X",
+					"08:3o - 09:30 "," Marvin","",
+					"09:3o - 11:00 "," Matte Live","",
+					"11:00 - 13:30 "," Maik","",
 
 				};
 static char *floor_b[FLOOR_B_LENGTH*9] = {
-					"00:oo - 01:oo "," slot 1",     "",
-					"01:oo - 02:oo "," slot 2",     "",
-					"02:oo - 03:oo "," slot 3",     "",
+					"23:55 - 02:oo "," Ogrimizer",     "",
+					"02:oo - 04:oo "," Meta",     "",
+					"04:oo - 06:oo "," Knizpel",     "",
+					"06:oo - 08:oo "," Metler",     "",
+					"08:oo - 10:oo "," Zwielicht",     "",
+					"10:oo - 12:oo "," LSDj 25",     "",
 				};
 static char *floor_c[FLOOR_C_LENGTH*9] = {
 					"00:oo - 01:oo "," slot x",     "",
@@ -98,7 +101,7 @@ void display_highscore()
 	tick++;
 
 	int color = sini(tick<<7);
-	int color2 = sini(tick<<9);
+	int color2 = sini(tick<<10);
 
 	print_5x3_at (4,0,location_name,color>>12);
 	print_5x3_at (4,0,event_name,15-(color>>12));
@@ -261,52 +264,52 @@ void display_highscore()
 
 
 	print_5x3_at (0,7,floor,10);
-	draw_filledRect(0,13,72,7,0,11,0);
-	draw_filledRect(0,30,72,7,0,11,0);
-	draw_filledRect(0,47,72,7,0,11,0);
+	draw_filledRect(0,13+2,72,7,0,11,0);
+	draw_filledRect(0,30+2,72,7,0,11,0);
+	draw_filledRect(0,47+2,72,7,0,11,0);
 
 
 	if(state_a==SCROLL_CLOCK_IN)
 	{
-		print_5x3_at (1+(72-state_b),14,time1,16+(color2>>13));
-		print_5x3_at (1+(72-state_b),31,time2,16+(color2>>13));
-		print_5x3_at (1+(72-state_b),48,time3,16+(color2>>13));
+		print_5x3_at (1+(72-state_b),14+2,time1,16+(color2>>14));
+		print_5x3_at (1+(72-state_b),31+2,time2,16+(color2>>14));
+		print_5x3_at (1+(72-state_b),48+2,time3,16+(color2>>14));
 	}
 	if(state_a==SCROLL_NAMES_IN)
 	{
-		print_5x3_at (1,14,time1,16+(color2>>13));
-		print_5x3_at (1,31,time2,16+(color2>>13));
-		print_5x3_at (1,48,time3,16+(color2>>13));
-		draw_text_8x6 (0+(72-state_b),17,dj1,0,15,0);
-		draw_text_8x6 (0+(72-state_b),34,dj2,0,15,0);
-		draw_text_8x6 (0+(72-state_b),51,dj3,0,15,0);
-		print_5x3_at (2+(72-state_b),17+6,dj1_sm,15);
-		print_5x3_at (2+(72-state_b),34+6,dj2_sm,15);
-		print_5x3_at (2+(72-state_b),51+6,dj3_sm,15);
+		print_5x3_at (1,14+2,time1,16+(color2>>14));
+		print_5x3_at (1,31+2,time2,16+(color2>>14));
+		print_5x3_at (1,48+2,time3,16+(color2>>14));
+		draw_text_8x6 (0+(72-state_b),17+2,dj1,0,15,0);
+		draw_text_8x6 (0+(72-state_b),34+2,dj2,0,15,0);
+		draw_text_8x6 (0+(72-state_b),51+2,dj3,0,15,0);
+		print_5x3_at (2+(72-state_b),17+6+2,dj1_sm,15);
+		print_5x3_at (2+(72-state_b),34+6+2,dj2_sm,15);
+		print_5x3_at (2+(72-state_b),51+6+2,dj3_sm,15);
 	}
 	if(state_a==WAIT_A)
 	{
-		print_5x3_at (1,14,time1,16+(color2>>13));
-		print_5x3_at (1,31,time2,16+(color2>>13));
-		print_5x3_at (1,48,time3,16+(color2>>13));
-		draw_text_8x6 (0,17,dj1,0,15,0);
-		draw_text_8x6 (0,34,dj2,0,15,0);
-		draw_text_8x6 (0,51,dj3,0,15,0);
-		print_5x3_at (0+2,17+6,dj1_sm,15);
-		print_5x3_at (0+2,34+6,dj2_sm,15);
-		print_5x3_at (0+2,51+6,dj3_sm,15);
+		print_5x3_at (1,14+2,time1,16+(color2>>14));
+		print_5x3_at (1,31+2,time2,16+(color2>>14));
+		print_5x3_at (1,48+2,time3,16+(color2>>14));
+		draw_text_8x6 (0,17+2,dj1,0,15,0);
+		draw_text_8x6 (0,34+2,dj2,0,15,0);
+		draw_text_8x6 (0,51+2,dj3,0,15,0);
+		print_5x3_at (0+2,17+6+2,dj1_sm,15);
+		print_5x3_at (0+2,34+6+2,dj2_sm,15);
+		print_5x3_at (0+2,51+6+2,dj3_sm,15);
 	}
 	if(state_a==SCROLL_OUT)
 	{
-		print_5x3_at (1-state_b,14,time1,16+(color2>>13));
-		print_5x3_at (1-state_b,31,time2,16+(color2>>13));
-		print_5x3_at (1-state_b,48,time3,16+(color2>>13));
-		draw_text_8x6 (0-state_b,17,dj1,0,15,0);
-		draw_text_8x6 (0-state_b,34,dj2,0,15,0);
-		draw_text_8x6 (0-state_b,51,dj3,0,15,0);
-		print_5x3_at (2-state_b,17+6,dj1_sm,15);
-		print_5x3_at (2-state_b,34+6,dj2_sm,15);
-		print_5x3_at (2-state_b,51+6,dj3_sm,15);
+		print_5x3_at (1-state_b,14+2,time1,16+(color2>>14));
+		print_5x3_at (1-state_b,31+2,time2,16+(color2>>14));
+		print_5x3_at (1-state_b,48+2,time3,16+(color2>>14));
+		draw_text_8x6 (0-state_b,17+2,dj1,0,15,0);
+		draw_text_8x6 (0-state_b,34+2,dj2,0,15,0);
+		draw_text_8x6 (0-state_b,51+2,dj3,0,15,0);
+		print_5x3_at (2-state_b,17+6+2,dj1_sm,15);
+		print_5x3_at (2-state_b,34+6+2,dj2_sm,15);
+		print_5x3_at (2-state_b,51+6+2,dj3_sm,15);
 	}
 	if(state_a==WAIT_B)
 	{
@@ -339,24 +342,25 @@ void display_highscore()
 
 			getLedXY(x,y,&red,&green,&blue);
 
-			uint8_t new_green=0;
+			uint8_t factor=0;
 
 			if(state_a==FADE_IN)
 			{
-				new_green = MIN(15,(green*(state_b/100.0f))+((((100-state_b)/75.0f)+0.25f)*(sini((dist*dist2*64000)+a*200)>>12)));
+				factor = 100-state_b;
 			}
 			else if(state_a==FADE_OUT)
 			{
-				new_green = MIN(15,(green*((100-state_b)/100.0f))+((((state_b)/75.0f)+0.25f)*(sini((dist*dist2*64000)+a*200)>>12)));
+				factor = state_b;
 			}
 			else if(state_a==WAIT_B)
 			{
-				new_green = MIN(15,(green*0.0f)+(1.00f*(sini((dist*dist2*64000)+a*200)>>13)));
+				factor=100;
 			}
 			else
 			{
-				new_green = MIN(15,(green*1.0f)+(0.25f*(sini((dist*dist2*64000)+a*200)>>13)));
+				factor=0;
 			}
+			uint8_t new_green = MIN(15,(green*((100-factor)/100.0f))+((((factor)/75.0f)+0.25f)*(sini((dist*dist2*64000)+a*200)>>12)));
 
 			setLedXY(x,y,0,new_green,0);
 		}
@@ -436,7 +440,43 @@ void write_frame(void)
 				pix = 0x67;
 			if(pix == 0x66)
 				pix = 0x67;
-
+/*void write_escaped(uint8_t byte)
+{
+	if(byte == 0x23)
+	{
+		uint8_t c = 0x65;
+		write(tty_fd,&c,1);
+		c = 1;
+		write(tty_fd,&c,1);
+	}
+	else if(byte == 0x42)
+	{
+		uint8_t c = 0x65;
+		write(tty_fd,&c,1);
+		c = 2;
+		write(tty_fd,&c,1);
+	}
+	else if(byte == 0x65)
+	{
+		uint8_t c = 0x65;
+		write(tty_fd,&c,1);
+		c = 3;
+		write(tty_fd,&c,1);
+	}
+	else if(byte == 0x66)
+	{
+		uint8_t c = 0x65;
+		write(tty_fd,&c,1);
+		c = 4;
+		write(tty_fd,&c,1);
+	}
+	else
+	{
+		unsigned char c = byte;
+		write(tty_fd,&c,1);
+	}
+}
+*/
 		
 			buf[pixel] = pix;
 			pixel++;
