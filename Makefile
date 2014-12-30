@@ -2,10 +2,10 @@ UNAME := $(shell uname)
 
 
 SRC = $(wildcard *.c)
-SRC+= sdl_draw/SDL_draw.c
+#SRC+= sdl_draw/SDL_draw.c
 SRC+= $(wildcard libs/*.c)
 
-FLAGS= --std=gnu99 -Wall -Wextra -Wall -funsigned-char -Wundef -Wsign-compare -pedantic  -Wstrict-prototypes -lftdi1
+FLAGS= --std=gnu99 -Wall -Wextra -Wall -funsigned-char -Wundef -Wsign-compare -pedantic  -Wstrict-prototypes -lftdi1 -lm
 
 
 ifeq ($(UNAME), Darwin)
@@ -17,12 +17,12 @@ ifeq ($(UNAME), Darwin)
 endif
 
 ifeq ($(UNAME), Linux)
-    FLAGS +=  -lSDL
+#    FLAGS +=  -lSDL
 endif
 
 
 all:
-	clang $(FLAGS) $(SRC) -o lineup -I. $(LDFLAGS)
+	gcc $(FLAGS) $(SRC) -o lineup -I. $(LDFLAGS)
 
 clean:
 	rm -f lineup

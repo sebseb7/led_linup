@@ -3,13 +3,13 @@
 #include <unistd.h>
 #include <assert.h>
 #include <sys/time.h>
-#define sdl_support
+//#define sdl_support
 #ifdef sdl_support
 #include <SDL/SDL.h>
 #include "sdl_draw/SDL_draw.h"
 #endif
 
-//#define serial
+#define serial
 
 #ifdef serial
 #include "libftdi1/ftdi.h"
@@ -69,11 +69,11 @@ static char *floor_list[] = {"Teknofloor:","Spyfloor:","Igloo:"};
 
 static char *floor_a[FLOOR_A_LENGTH*9] = {
 					"23:55 - 01:oo "," Ernstesy",     "",
-					"01:oo - 02:3o "," 90Â°",     "",
+					"01:oo - 02:3o "," 90 Grad°",     "",
 					"02:3o - 04:oo "," P3p3d",     "",
 					"04:oo - 05:3o "," Steffen",      "",
 					"05:3o - 07:00 "," Hesed","             (ATM)",
-					"07:00 - 08:30 "," Andre Tripple X",""
+					"07:00 - 08:30 "," Andre XXX",""
 					//0800 - 930 Marvin
 					//930 - 11:00 Matte Live
 					//11:00 13:30 Maik
@@ -351,11 +351,11 @@ void display_highscore()
 			}
 			else if(state_a==WAIT_B)
 			{
-				new_green = MIN(15,(green*0.0f)+(1.00f*(sini((dist*dist2*64000)+a*200)>>12)));
+				new_green = MIN(15,(green*0.0f)+(1.00f*(sini((dist*dist2*64000)+a*200)>>13)));
 			}
 			else
 			{
-				new_green = MIN(15,(green*1.0f)+(0.25f*(sini((dist*dist2*64000)+a*200)>>12)));
+				new_green = MIN(15,(green*1.0f)+(0.25f*(sini((dist*dist2*64000)+a*200)>>13)));
 			}
 
 			setLedXY(x,y,0,new_green,0);
@@ -428,6 +428,8 @@ void write_frame(void)
 		
 			int pix = display[y2][x*2+1]*16+display[y2][x*2];
 
+			if(pix == 0x23)
+				pix = 0x24;
 			if(pix == 0x42)
 				pix = 0x43;
 			if(pix == 0x65)
@@ -448,7 +450,7 @@ void write_frame(void)
 	{
 		fprintf(stderr,"write failed , error %d (%s)\n",ret, ftdi_get_error_string(ftdi));
 	}
-	usleep(2000);
+	usleep(200);
 
 }
 #endif
@@ -605,7 +607,7 @@ int main(int argc __attribute__((unused)), char *argv[] __attribute__((unused)))
 #ifdef sdl_support
 		SDL_Delay(10);
 #else
-		usleep(20000);
+		usleep(20);
 #endif
 	}
 

@@ -43,22 +43,9 @@ double pythagoras( double side1, double side2 )
 	return sqrt(side1*side1+side2*side2);
 }
 
-#if defined(__arm__) && defined (__ARM_PCS_VFP)
-__attribute__( ( always_inline ) ) static __INLINE float __VSQRTF(float op1)
-{
-	float result;
-	__ASM volatile ("vsqrt.f32 %0, %1" : "=w" (result) : "w" (op1) );
-	return(result);
-}
-#endif
-
 float pythagorasf( float side1, float side2 )
 {
-#if defined(__arm__) && defined (__ARM_PCS_VFP)
-	return __VSQRTF( side1*side1 + side2*side2 );
-#else
 	return sqrtf( side1*side1 + side2*side2 );
-#endif
 }
 
 

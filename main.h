@@ -1,6 +1,8 @@
 #ifndef MAIN_H_
 #define MAIN_H_
 
+#include <stdint.h>
+
 enum {
 	DISPLAY_WIDTH = 72,
 	DISPLAY_HEIGHT = 64,
