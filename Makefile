@@ -1,7 +1,11 @@
 UNAME := $(shell uname)
 
 
+SOURCES=$(wildcard ../animations/*.c)
+BINARIES=$(SOURCES:../animations/%.c=%$(BINEXT))
+
 SRC = $(wildcard *.c)
+SRC+=$(wildcard animations/*.c)
 SRC+= $(wildcard libs/*.c)
 
 FLAGS= --std=gnu99 -Wall -Wextra -Wall -funsigned-char -Wundef -Wsign-compare -pedantic  -Wstrict-prototypes -lftdi1 -lm

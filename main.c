@@ -14,366 +14,40 @@ static struct ftdi_context *ftdi;
 #endif
 
 #include "main.h"
-#include "libs/text.h"
-#include "libs/text_5x3.h"
-#include "libs/armmath.h"
-#include "libs/rect.h"
 
-
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
-
-
-enum { ZOOM = 9 };
 
 
 static unsigned char	display[DISPLAY_HEIGHT][DISPLAY_WIDTH];
 static int				rerender = 1;
 
-static int tick = 0;
-static uint16_t a = 0;
 
 
-enum{
-	FADE_IN=0,
-	SCROLL_CLOCK_IN,
-	SCROLL_NAMES_IN,
-	WAIT_A,
-	SCROLL_OUT,
-	FADE_OUT,
-	WAIT_B
-};
-enum{
-	FUTUREFLOOR=0,
-	SPYFLOOR,
-	IGLOO
-};
+#define MAX_ANIMATIONS 200
 
-static uint16_t state_a = 0;
-static uint16_t state_b = 0;
-static uint16_t state_d = 0;
-static uint16_t state_e = 0;
+int animationcount = 0;
+
+struct animation {
+	init_fun init_fp;
+	tick_fun tick_fp;
+	deinit_fun deinit_fp;
+	int duration;
+	int min_delay;
+} animations[MAX_ANIMATIONS];
 
 
-static char *location_name = "    SEKTOR      ";
-static char *event_name =    "   SYLVESTER    ";
-static char *floor_list[] = {"TEKNOFLOOR","SPYFLOOR","IGLOO"};
-
-
-#define FLOOR_A_LENGTH 3
-#define FLOOR_B_LENGTH 2
-#define FLOOR_C_LENGTH 2
-
-static char *floor_a[FLOOR_A_LENGTH*9] = {
-					"23:55 - 01:oo "," Ernstesy",     "",
-					"01:oo - 02:3o "," 90 Grad",     "",
-					"02:3o - 04:oo "," P3p3d",     "",
-					"04:oo - 05:3o "," Steffen",      "",
-					"05:3o - 07:oo "," Hesed","             (ATM)",
-					"07:oo - 08:3o ",""," Andre Triple X",
-					"08:3o - 09:3o "," Marvin","",
-					"09:3o - 11:oo "," Matte Live","",
-					"11:oo - 13:3o "," Maik","",
-
-				};
-static char *floor_b[FLOOR_B_LENGTH*9] = {
-					"23:55 - 02:oo "," Ogrimizer",     "",
-					"02:oo - 04:oo "," Meta",     "",
-					"04:oo - 06:oo "," Knizpel",     "",
-					"06:oo - 08:oo "," Metler",     "",
-					"08:oo - 10:oo "," Zwielicht",     "",
-					"10:oo - 12:oo "," LSDj 25",     "",
-				};
-static char *floor_c[FLOOR_C_LENGTH*9] = {
-					"23:55 - 02:oo "," ?",     "",
-					"02:oo - 04:oo "," ?",     "",
-					"04:oo - 06:oo "," ?",     "",
-					"06:oo - 07:oo "," ?",     "",
-					"08:oo - 10:oo "," ?",     "",
-					"10:oo - 12:oo "," ?",     "",
-				};
-
-
-
-
-void display_highscore()
+void registerAnimation(init_fun init,tick_fun tick, deinit_fun deinit,uint16_t t, uint16_t count)
 {
-	tick++;
+	if(animationcount == MAX_ANIMATIONS)
+		return;
+	animations[animationcount].init_fp = init;
+	animations[animationcount].tick_fp = tick;
+	animations[animationcount].deinit_fp = deinit;
+	animations[animationcount].duration = count;
+	animations[animationcount].min_delay = t;
 
-	int color = sini(tick<<9);
-	int color2 = sini(tick<<10);
+	animationcount++;
 
-	print_5x3_at (4,0,location_name,color>>12);
-	print_5x3_at (4,0,event_name,15-(color>>12));
-
-
-	if(state_a == FADE_IN)
-	{
-		state_b+=4;
-		if(state_b>=100)
-		{
-			state_a++;
-			state_b=0;
-		}
-	}
-	else if(state_a == SCROLL_CLOCK_IN)
-	{
-		state_b+=4;
-		if(state_b>=72)
-		{
-			state_a++;
-			state_b=0;
-		}
-	}
-	else if(state_a == SCROLL_NAMES_IN)
-	{
-		state_b+=4;
-		if(state_b>=72)
-		{
-			state_a++;
-			state_b=0;
-		}
-	}
-	else if(state_a == WAIT_A)
-	{
-		state_b+=2;
-		if(state_b>=150)
-		{
-			state_a++;
-			state_b=0;
-		}
-	}
-	else if(state_a == SCROLL_OUT)
-	{
-		state_b+=4;
-		if(state_b>=72)
-		{
-			state_a=SCROLL_CLOCK_IN;
-			state_b=0;
-			
-				state_e++;
-				if(state_d == FUTUREFLOOR)
-				{
-					if(state_e==FLOOR_A_LENGTH)
-					{
-						state_e=0;
-						state_a=FADE_OUT;
-					}
-				}
-				if(state_d == SPYFLOOR)
-				{
-					if(state_e==FLOOR_B_LENGTH)
-					{
-						state_e=0;
-						state_a=FADE_OUT;
-					}
-				}
-				if(state_d == IGLOO)
-				{
-					if(state_e==FLOOR_C_LENGTH)
-					{
-						state_e=0;
-						state_a=FADE_OUT;
-					}
-				}
-		}
-	}
-	else if(state_a == FADE_OUT)
-	{
-		state_b++;
-		if(state_b>=100)
-		{
-			state_a++;
-			state_b=0;
-				if(state_d == FUTUREFLOOR)
-				{
-					state_d=SPYFLOOR;
-				}
-				else if(state_d == SPYFLOOR)
-				{
-					state_d=IGLOO;
-				}
-				else if(state_d == IGLOO)
-				{
-					state_d=FUTUREFLOOR;
-				}
-		}
-	}
-	else if(state_a == WAIT_B)
-	{
-		state_b++;
-		if(state_b>=50)
-		{
-			state_a=FADE_IN;
-			state_b=0;
-		}
-	}
-	char* time1 ="";
-	char* time2 ="";
-	char* time3 ="";
-
-	char* dj1 = "";
-	char* dj2 = "";
-	char* dj3 = "";
-	char* dj1_sm = "";
-	char* dj2_sm = "";
-	char* dj3_sm = "";
-
-	char* floor=floor_list[state_d];
-
-	if(state_d == FUTUREFLOOR)
-	{
-		dj1=floor_a[state_e*9+1];
-		dj2=floor_a[state_e*9+1+3];
-		dj3=floor_a[state_e*9+1+6];
-		dj1_sm=floor_a[state_e*9+2];
-		dj2_sm=floor_a[state_e*9+2+3];
-		dj3_sm=floor_a[state_e*9+2+6];
-		time1=floor_a[state_e*9];
-		time2=floor_a[state_e*9+3];
-		time3=floor_a[state_e*9+6];
-	}
-	if(state_d == SPYFLOOR)
-	{
-		dj1=floor_b[state_e*9+1];
-		dj2=floor_b[state_e*9+1+3];
-		dj3=floor_b[state_e*9+1+6];
-		dj1_sm=floor_b[state_e*9+2];
-		dj2_sm=floor_b[state_e*9+2+3];
-		dj3_sm=floor_b[state_e*9+2+6];
-		time1=floor_b[state_e*9];
-		time2=floor_b[state_e*9+3];
-		time3=floor_b[state_e*9+6];
-	}
-	if(state_d == IGLOO)
-	{
-		dj1=floor_c[state_e*9+1];
-		dj2=floor_c[state_e*9+1+3];
-		dj3=floor_c[state_e*9+1+6];
-		dj1_sm=floor_c[state_e*9+2];
-		dj2_sm=floor_c[state_e*9+2+3];
-		dj3_sm=floor_c[state_e*9+2+6];
-		time1=floor_c[state_e*9];
-		time2=floor_c[state_e*9+3];
-		time3=floor_c[state_e*9+6];
-	}
-
-
-
-
-
-
-	print_5x3_at (0,9,floor,10);
-	draw_filledRect(0,13+2,72,7,0,11,0);
-	draw_filledRect(0,30+2,72,7,0,11,0);
-	draw_filledRect(0,47+2,72,7,0,11,0);
-
-
-	if(state_a==SCROLL_CLOCK_IN)
-	{
-		print_5x3_at (1+(72-state_b),14+2,time1,16+(color2>>15));
-		print_5x3_at (1+(72-state_b),31+2,time2,16+(color2>>15));
-		print_5x3_at (1+(72-state_b),48+2,time3,16+(color2>>15));
-	}
-	if(state_a==SCROLL_NAMES_IN)
-	{
-		print_5x3_at (1,14+2,time1,16+(color2>>15));
-		print_5x3_at (1,31+2,time2,16+(color2>>15));
-		print_5x3_at (1,48+2,time3,16+(color2>>15));
-		draw_text_8x6 (0+(72-state_b),17+2,dj1,0,15,0);
-		draw_text_8x6 (0+(72-state_b),34+2,dj2,0,15,0);
-		draw_text_8x6 (0+(72-state_b),51+2,dj3,0,15,0);
-		print_5x3_at (2+(72-state_b),17+6+2,dj1_sm,15);
-		print_5x3_at (2+(72-state_b),34+6+2,dj2_sm,15);
-		print_5x3_at (2+(72-state_b),51+6+2,dj3_sm,15);
-	}
-	if(state_a==WAIT_A)
-	{
-		print_5x3_at (1,14+2,time1,16+(color2>>15));
-		print_5x3_at (1,31+2,time2,16+(color2>>15));
-		print_5x3_at (1,48+2,time3,16+(color2>>15));
-		draw_text_8x6 (0,17+2,dj1,0,15,0);
-		draw_text_8x6 (0,34+2,dj2,0,15,0);
-		draw_text_8x6 (0,51+2,dj3,0,15,0);
-		print_5x3_at (0+2,17+6+2,dj1_sm,15);
-		print_5x3_at (0+2,34+6+2,dj2_sm,15);
-		print_5x3_at (0+2,51+6+2,dj3_sm,15);
-	}
-	if(state_a==SCROLL_OUT)
-	{
-		print_5x3_at (1-state_b,14+2,time1,16+(color2>>15));
-		print_5x3_at (1-state_b,31+2,time2,16+(color2>>15));
-		print_5x3_at (1-state_b,48+2,time3,16+(color2>>15));
-		draw_text_8x6 (0-state_b,17+2,dj1,0,15,0);
-		draw_text_8x6 (0-state_b,34+2,dj2,0,15,0);
-		draw_text_8x6 (0-state_b,51+2,dj3,0,15,0);
-		print_5x3_at (2-state_b,17+6+2,dj1_sm,15);
-		print_5x3_at (2-state_b,34+6+2,dj2_sm,15);
-		print_5x3_at (2-state_b,51+6+2,dj3_sm,15);
-	}
-	if(state_a==WAIT_B)
-	{
-	}
-
-
-
-
-	{
-	
-	float x0 = sini(a*25)/910.0f; 
-	float y0 = sini((a*40)+0x1000)/910.0f;
-	float x1 = sini(a*50)/1024.0f;
-	float y1 = sini((a*80)+0x2000)/1024.0f;
-	uint8_t x, y;
-	
-
-	for(y = 8; y < LCD_HEIGHT; y++) 
-	{
-		for(x = 0; x < LCD_WIDTH; x++) 
-		{
-			int dist = sini(pythagorasf(x0-x,y0-y)*1024)>>9;
-			int dist2 = sini(pythagorasf(x1-x,y1-y)*1024)>>9 ;
-				// sini((dist*dist2*dist2)+a*300)>>8, -> noise
-
-
-			uint8_t red=0;
-			uint8_t green=0;
-			uint8_t blue=0;
-
-			getLedXY(x,y,&red,&green,&blue);
-
-			uint8_t factor=0;
-
-			if(state_a==FADE_IN)
-			{
-				factor = 100-state_b;
-			}
-			else if(state_a==FADE_OUT)
-			{
-				factor = state_b;
-			}
-			else if(state_a==WAIT_B)
-			{
-				factor=100;
-			}
-			else
-			{
-				factor=0;
-			}
-			uint8_t new_green = MIN(15,(green*((100-factor)/100.0f))+((((factor)/85.0f)+0.15f)*( sini((dist*dist2)+a*300)>>12)));
-			//new_green = sini((dist*dist2)+a*300)>>12;
-
-			setLedXY(x,y,0,new_green,0);
-		}
-	}
-	a+=2;
-	if(a==0x4000)
-	{
-		a=0;
-	}
-	}
 }
-
 
 void setLedXY(uint16_t x, uint16_t y, uint8_t red,uint8_t green, uint8_t blue) {
 	if (x >= LCD_WIDTH) return;
@@ -413,6 +87,58 @@ void getLedXY(uint16_t x, uint16_t y, uint8_t* red,uint8_t* green, uint8_t* blue
 #ifdef serial
 void write_frame(void)
 {
+	unsigned char buf[DISPLAY_HEIGHT*DISPLAY_WIDTH*2+1];
+
+	uint32_t pixel=0;
+				
+	buf[pixel++] = 0x23;
+
+	for(uint8_t y = 0;y<DISPLAY_HEIGHT;y++)
+	{
+		for(uint8_t x = 0;x<DISPLAY_WIDTH/2;x++)
+		{
+			uint8_t y2=y;
+			if(y2>=32){y2-=32;} else{ y2+=32;};
+
+			int pix = display[y2][x*2+1]*16+display[y2][x*2];
+
+			if(pix == 0x23)
+			{
+				buf[pixel++] = 0x65;
+				buf[pixel++] = 1;
+			}
+			else if(pix == 0x42)
+			{
+				buf[pixel++] = 0x65;
+				buf[pixel++] = 2;
+			}
+			else if(pix == 0x65)
+			{
+				buf[pixel++] = 0x65;
+				buf[pixel++] = 3;
+			}
+			else if(pix == 0x66)
+			{
+				buf[pixel++] = 0x65;
+				buf[pixel++] = 4;
+			}
+			else
+			{
+				buf[pixel++] = pix;
+			}
+		}
+	}
+
+	ret = ftdi_write_data(ftdi, buf, pixel);
+	if (ret < 0)
+	{
+		fprintf(stderr,"write failed , error %d (%s)\n",ret, ftdi_get_error_string(ftdi));
+	}
+	usleep(200);
+
+}
+void write_frame_old(void)
+{
 	unsigned char c=0x23;
 	int ret = ftdi_write_data(ftdi, &c,1);
 	if (ret < 0)
@@ -420,7 +146,7 @@ void write_frame(void)
 		fprintf(stderr,"write failed , error %d (%s)\n",ret, ftdi_get_error_string(ftdi));
 	}
 
-	static unsigned char buf[DISPLAY_HEIGHT*DISPLAY_WIDTH];
+	static unsigned char buf[DISPLAY_HEIGHT*DISPLAY_WIDTH*2];
 
 	uint32_t pixel=0;
 
@@ -430,7 +156,7 @@ void write_frame(void)
 		{
 			uint8_t y2=y;
 			if(y2>=32){y2-=32;} else{ y2+=32;};
-		
+
 			int pix = display[y2][x*2+1]*16+display[y2][x*2];
 
 			if(pix == 0x23)
@@ -441,51 +167,14 @@ void write_frame(void)
 				pix = 0x67;
 			if(pix == 0x66)
 				pix = 0x67;
-/*void write_escaped(uint8_t byte)
-{
-	if(byte == 0x23)
-	{
-		uint8_t c = 0x65;
-		write(tty_fd,&c,1);
-		c = 1;
-		write(tty_fd,&c,1);
-	}
-	else if(byte == 0x42)
-	{
-		uint8_t c = 0x65;
-		write(tty_fd,&c,1);
-		c = 2;
-		write(tty_fd,&c,1);
-	}
-	else if(byte == 0x65)
-	{
-		uint8_t c = 0x65;
-		write(tty_fd,&c,1);
-		c = 3;
-		write(tty_fd,&c,1);
-	}
-	else if(byte == 0x66)
-	{
-		uint8_t c = 0x65;
-		write(tty_fd,&c,1);
-		c = 4;
-		write(tty_fd,&c,1);
-	}
-	else
-	{
-		unsigned char c = byte;
-		write(tty_fd,&c,1);
-	}
-}
-*/
-		
+
 			buf[pixel] = pix;
 			pixel++;
 		}
 	}
 
 
-		
+
 	ret = ftdi_write_data(ftdi, buf, 2304);
 	if (ret < 0)
 	{
@@ -495,8 +184,8 @@ void write_frame(void)
 
 }
 #endif
-	
-	
+
+
 void clear_display()
 {
 	for(uint8_t y = 0;y<DISPLAY_HEIGHT;y++)
@@ -514,11 +203,15 @@ int main(int argc __attribute__((unused)), char *argv[] __attribute__((unused)))
 	srand(SDL_GetTicks());
 #endif
 
+
+	int current_animation = 0;
+	animations[current_animation].init_fp();
+
 #ifdef serial
 
-	
-	
-	
+
+
+
 	int ret;
 	struct ftdi_version_info version;
 	if ((ftdi = ftdi_new()) == 0)
@@ -555,8 +248,8 @@ int main(int argc __attribute__((unused)), char *argv[] __attribute__((unused)))
 		fprintf(stderr, "unable to set baudrate: %d (%s)\n", ret, ftdi_get_error_string(ftdi));
 		exit(-1);
 	}
-	
-		
+
+
 	unsigned char c=66;
 	ret = ftdi_write_data(ftdi, &c,1);
 	c=0;
@@ -597,8 +290,8 @@ int main(int argc __attribute__((unused)), char *argv[] __attribute__((unused)))
 #endif
 
 	int running = 1;
-		
-				
+
+
 
 	while(running) {
 
@@ -629,8 +322,7 @@ int main(int argc __attribute__((unused)), char *argv[] __attribute__((unused)))
 		}
 #endif
 
-		clear_display();
-		display_highscore();
+		animations[current_animation].tick_fp();
 
 		if(rerender) {
 			rerender = 0;
