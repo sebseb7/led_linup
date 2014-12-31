@@ -12,13 +12,14 @@ FLAGS= --std=gnu99 -Wall -Wextra -Wall -funsigned-char -Wundef -Wsign-compare -p
 
 
 ifeq ($(UNAME), Darwin)
-	SRC+= sdl_draw/SDL_draw.c
+	#SRC+= sdl_draw/SDL_draw.c
 	COMPILER = clang
 	FLAGS   += -Qunused-arguments
 	
-	FLAGS   += `sdl-config --cflags` 
-	FLAGS   += -Dsdl_support 
-	LDFLAGS += `sdl-config --libs`  
+	#FLAGS   += `sdl-config --cflags` 
+	#FLAGS   += -Dsdl_support 
+	#FLAGS   += -Dserial 
+	#LDFLAGS += `sdl-config --libs`  
 endif
 
 ifeq ($(UNAME), Linux)

@@ -7,13 +7,14 @@
 #include <SDL/SDL.h>
 #include "sdl_draw/SDL_draw.h"
 #endif
+#include "main.h"
 
+#define serial
 #ifdef serial
 #include "libftdi1/ftdi.h"
 static struct ftdi_context *ftdi;
 #endif
 
-#include "main.h"
 
 
 
@@ -129,7 +130,7 @@ void write_frame(void)
 		}
 	}
 
-	ret = ftdi_write_data(ftdi, buf, pixel);
+	int ret = ftdi_write_data(ftdi, buf, pixel);
 	if (ret < 0)
 	{
 		fprintf(stderr,"write failed , error %d (%s)\n",ret, ftdi_get_error_string(ftdi));
