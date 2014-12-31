@@ -189,59 +189,27 @@ static uint8_t tick(void) {
 			state_b=0;
 		}
 	}
-	char* time1 ="";
-	char* time2 ="";
-	char* time3 ="";
-
-	char* dj1 = "";
-	char* dj2 = "";
-	char* dj3 = "";
-	char* dj1_sm = "";
-	char* dj2_sm = "";
-	char* dj3_sm = "";
 
 	char* floor=floor_list[state_d];
-
+	
+	char**strings;
+	
 	if(state_d == FUTUREFLOOR)
-	{
-		dj1=floor_a[state_e*9+1];
-		dj2=floor_a[state_e*9+1+3];
-		dj3=floor_a[state_e*9+1+6];
-		dj1_sm=floor_a[state_e*9+2];
-		dj2_sm=floor_a[state_e*9+2+3];
-		dj3_sm=floor_a[state_e*9+2+6];
-		time1=floor_a[state_e*9];
-		time2=floor_a[state_e*9+3];
-		time3=floor_a[state_e*9+6];
-	}
+		strings=floor_a;
 	if(state_d == SPYFLOOR)
-	{
-		dj1=floor_b[state_e*9+1];
-		dj2=floor_b[state_e*9+1+3];
-		dj3=floor_b[state_e*9+1+6];
-		dj1_sm=floor_b[state_e*9+2];
-		dj2_sm=floor_b[state_e*9+2+3];
-		dj3_sm=floor_b[state_e*9+2+6];
-		time1=floor_b[state_e*9];
-		time2=floor_b[state_e*9+3];
-		time3=floor_b[state_e*9+6];
-	}
+		strings=floor_b;
 	if(state_d == IGLOO)
-	{
-		dj1=floor_c[state_e*9+1];
-		dj2=floor_c[state_e*9+1+3];
-		dj3=floor_c[state_e*9+1+6];
-		dj1_sm=floor_c[state_e*9+2];
-		dj2_sm=floor_c[state_e*9+2+3];
-		dj3_sm=floor_c[state_e*9+2+6];
-		time1=floor_c[state_e*9];
-		time2=floor_c[state_e*9+3];
-		time3=floor_c[state_e*9+6];
-	}
-
-
-
-
+		strings=floor_c;
+		
+	char* dj1=strings[state_e*9+1];
+	char* dj2=strings[state_e*9+1+3];
+	char* dj3=strings[state_e*9+1+6];
+	char* dj1_sm=strings[state_e*9+2];
+	char* dj2_sm=strings[state_e*9+2+3];
+	char* dj3_sm=strings[state_e*9+2+6];
+	char* time1=strings[state_e*9];
+	char* time2=strings[state_e*9+3];
+	char* time3=strings[state_e*9+6];
 
 
 	print_5x3_at (0,9,floor,10);
@@ -314,8 +282,6 @@ static uint8_t tick(void) {
 			{
 				int dist = sini(pythagorasf(x0-x,y0-y)*1024.0f)>>9;
 				int dist2 = sini(pythagorasf(x1-x,y1-y)*1024.0f)>>9 ;
-				// sini((dist*dist2*dist2)+a*300)>>8, -> noise
-
 
 				uint8_t red=0;
 				uint8_t green=0;
@@ -342,7 +308,6 @@ static uint8_t tick(void) {
 					factor=0;
 				}
 				uint8_t new_green = MIN(15,(green*((100-factor)/100.0f))+((((factor)/85.0f)+0.15f)*( sini((dist*dist2)+a*300)>>12)));
-				//new_green = sini((dist*dist2)+a*300)>>12;
 
 				setLedXY(x,y,0,new_green,0);
 			}
