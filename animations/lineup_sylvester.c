@@ -47,8 +47,8 @@ static char *floor_list[] = {"TEKNOFLOOR","SPYFLOOR","IGLOO"};
 static char *floor_a[FLOOR_A_LENGTH*9] = {
 	"23:55 - 01:oo "," Ernstesy",     "",
 	"01:oo - 02:3o "," 90 Grad",     "",
-	"02:3o - 04:oo "," P3p3d",     "",
-	"04:oo - 05:3o "," Steffen",      "",
+	"02:3o - 04:oo "," Steffen",     "",
+	"04:oo - 05:3o "," P3p3d",      "",
 	"05:3o - 07:oo "," Hesed","             (ATM)",
 	"07:oo - 08:3o ",""," Andre Triple X",
 	"08:3o - 09:3o "," Marvin","",
