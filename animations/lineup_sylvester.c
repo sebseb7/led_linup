@@ -42,7 +42,7 @@ static char *floor_list[] = {"TEKNOFLOOR","SPYFLOOR","IGLOO"};
 
 #define FLOOR_A_LENGTH 3
 #define FLOOR_B_LENGTH 2
-#define FLOOR_C_LENGTH 2
+#define FLOOR_C_LENGTH 4
 
 static char *floor_a[FLOOR_A_LENGTH*9] = {
 	"23:55 - 01:oo "," Ernstesy",     "",
@@ -65,12 +65,18 @@ static char *floor_b[FLOOR_B_LENGTH*9] = {
 	"10:oo - 12:oo "," LSDj 25",     "",
 };
 static char *floor_c[FLOOR_C_LENGTH*9] = {
-	"23:55 - 02:oo "," ?",     "",
-	"02:oo - 04:oo "," ?",     "",
-	"04:oo - 06:oo "," ?",     "",
-	"06:oo - 07:oo "," ?",     "",
-	"08:oo - 10:oo "," ?",     "",
-	"10:oo - 12:oo "," ?",     "",
+	"23:55 - 02:oo "," Gnista",     "",
+	"02:oo - 03:oo "," ",     " Dub Positive",
+	"03:oo - 04:oo "," Shadi",     "",
+	"04:oo - 05:oo "," ",     " Marcus Krassus",
+	"05:oo - 07:oo "," Tajo",     "",
+	"07:oo - 08:oo "," Marvin",     "",
+	"08:oo - 10:oo "," ",     " MRRM & Felix V.",
+	"10:oo - 12:oo "," ",     " Lenn. R. & Geronimo",
+	"12:oo - 14:oo "," Navigate",     "",
+	"14:oo - 16:oo "," ",     " Antoine de Ramena",
+	"16:oo - 18:oo "," Ufo Guy",     "",
+	" "," ",     "",
 };
 
 
