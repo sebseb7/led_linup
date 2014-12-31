@@ -58,8 +58,8 @@ static char *floor_a[FLOOR_A_LENGTH*9] = {
 };
 static char *floor_b[FLOOR_B_LENGTH*9] = {
 	"23:55 - 02:oo "," Ogrimizer",     "",
-	"02:oo - 04:oo "," Meta",     "",
-	"04:oo - 06:oo "," Knizpel",     "",
+	"02:oo - 04:oo "," Knizpel",     "",
+	"04:oo - 06:oo "," Meta",     "",
 	"06:oo - 08:oo "," Metler",     "",
 	"08:oo - 10:oo "," Zwielicht",     "",
 	"10:oo - 12:oo "," LSDj 25",     "",
